@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using ExtendShortenShiftTime.Patches;
 using HarmonyLib;
 
 namespace ExtendShortenShiftTime
@@ -16,8 +15,8 @@ namespace ExtendShortenShiftTime
         private readonly Harmony harmony = new Harmony(modGUID);
 
         public static ConfigEntry<bool> Config_enabled { get; private set; }
-        public static ConfigEntry<int> Config_shiftTime { get; private set; }
-        public static ConfigEntry<bool> Config_ShiftTimeInSeconds { get; private set; }
+        public static ConfigEntry<float> Config_shiftTime { get; private set; }
+        public static ConfigEntry<float> Config_maxShiftTime { get; private set; }
         public static ManualLogSource LoggerInstance;
 
         void Awake()
@@ -26,8 +25,7 @@ namespace ExtendShortenShiftTime
             SetConfigs();
             if (Config_enabled.Value)
             {
-                harmony.PatchAll(typeof(ExtendShortenShiftTime));
-                harmony.PatchAll(typeof(GameSessionTimerDataPatch));
+                harmony.PatchAll();
                 LoggerInstance.LogInfo("ExtendShortenShiftTime patched.");
             }
             else
@@ -39,8 +37,13 @@ namespace ExtendShortenShiftTime
         private void SetConfigs()
         {
             Config_enabled = Config.Bind("Config", "Enabled", true, "Whether to enable the plugin or not.");
-            Config_shiftTime = Config.Bind("Config", "ShiftTime", 20, "Shift time in minutes(if ShiftTimeInSeconds is true then it will be in seconds).");
-            Config_ShiftTimeInSeconds = Config.Bind("Config", "ShiftTimeInSeconds", false, "Whether to specify ShiftTime in seconds or not(to allow finer tunning).");
+            Config_shiftTime = Config.Bind("Config", "ShiftTime", 20f, "Shift time in minutes.");
+            Config_maxShiftTime = Config.Bind("Config", "MaxShiftTime", 45f, "Max shift time(for slider) in minutes. If this is too large then slider might not be precise.");
+        }
+
+        public static void SetConfigShiftTime(float value)
+        {
+            Config_shiftTime.Value = value;
         }
     }
 }

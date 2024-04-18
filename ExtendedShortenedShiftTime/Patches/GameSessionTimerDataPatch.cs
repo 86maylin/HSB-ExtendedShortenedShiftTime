@@ -26,17 +26,9 @@ namespace ExtendShortenShiftTime.Patches
                 enabled = true;
                 active = true;
             }
-            if (levelData.SessionType == GameSession.SessionType.Career && levelData.CompletionTimeInSeconds != 0)
+            if (levelData.SessionType == GameSession.SessionType.Career && completionTimeInSeconds != 0 && !flag)
             {
-                float value;
-                if (ExtendShortenShiftTime.Config_ShiftTimeInSeconds.Value)
-                {
-                    value = ExtendShortenShiftTime.Config_shiftTime.Value;
-                }
-                else
-                {
-                    value = ExtendShortenShiftTime.Config_shiftTime.Value * 60;
-                }
+                float value = ExtendShortenShiftTime.Config_shiftTime.Value * 60;
                 ExtendShortenShiftTime.LoggerInstance.LogInfo("Set shift time to: " + value);
                 __result = new GameSessionTimerData(flag, value, value, enabled, active);
             }
